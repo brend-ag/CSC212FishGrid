@@ -33,7 +33,7 @@ public abstract class WorldObject {
 	/**
 	 * What world do I belong to?
 	 */
-	protected World world;
+	protected World world; //world!
 	/**
 	 * How many fish do we anticipate having? This is used to make them follow you.
 	 */
@@ -44,9 +44,15 @@ public abstract class WorldObject {
 	 *  - remove from the back.
 	 * Because we want keep up to NUM_RECENT_POSITIONS locations for every fish.
 	 *
-	 * https://docs.oracle.com/javase/7/docs/api/java/util/Deque.htmlP
+	 * 
 	 */
-	public Deque<IntPoint> recentPositions;
+	public Deque<IntPoint> recentPositions; /*deck called int point 
+	//called recent positions to track the rec. pos of the fishes */
+	/*for interfaces: name deque is short for "double ended queue" and is 
+	 * usually pronounced "deck". Most Deque implementations place no 
+	 * fixed limits on the number of elements they may contain, but this interface 
+	 * supports capacity-restricted deques as well as those with no fixed size limit.
+	 */
 
 	/**
 	 * Create a new WorldObject -- this is the call to super(world) in Fish.
@@ -62,7 +68,7 @@ public abstract class WorldObject {
 	 * Remove this WorldObject from its world.
 	 */
 	public void remove() {
-		this.world.remove(this);
+		this.world.remove(this); //remove item fr world, ret. null
 		this.world = null;
 	}
 
@@ -108,6 +114,7 @@ public abstract class WorldObject {
 	 */
 	public boolean moveUp() {
 		if (world.canSwim(this, x, y - 1)) {
+			//(WorldObject whoIsAsking, int x, int y)
 			this.y -= 1;
 			updatePosition();
 			return true;
@@ -121,7 +128,7 @@ public abstract class WorldObject {
 	 * @return true if this is a Fish.
 	 */
 	public boolean isFish() {
-		return this instanceof Fish;
+		return this instanceof Fish; //oo keyword instanceof
 	}
 
 	/**
@@ -130,7 +137,9 @@ public abstract class WorldObject {
 	 * @return true if this is a Fish that is the player.
 	 */
 	public boolean isPlayer() {
-		return isFish() && ((Fish) this).player;
+		return isFish() && ((Fish) this).player; 
+		//second half = bit confusing? casting Fish then
+		//making sure it's a player
 	}
 
 	/**
@@ -181,7 +190,7 @@ public abstract class WorldObject {
 	public void moveRandomly() {
 		// Can we move right, left, down, or up?
 		boolean canMove = 
-				world.canSwim(this, x+1, y) ||
+				world.canSwim(this, x+1, y) || //ooo interesting format of long or-based statement
 				world.canSwim(this, x-1, y) ||
 				world.canSwim(this, x, y+1) ||
 				world.canSwim(this, x, y-1);
@@ -196,9 +205,9 @@ public abstract class WorldObject {
 		while (true) {
 			
 			// Choose a direction at random.
-			int direction = ThreadLocalRandom.current().nextInt(4);
+			int direction = ThreadLocalRandom.current().nextInt(4); 
 			
-			boolean success = false;
+			boolean success = false; //assumes not successful
 			if (direction == 0) {
 				success = moveUp();
 			} else if (direction == 1) {
@@ -238,7 +247,7 @@ public abstract class WorldObject {
 
 
 	public IntPoint getPosition() {
-		return new IntPoint(this.x, this.y);
+		return new IntPoint(this.x, this.y); //player's position
 	}
 
 	/**
@@ -246,6 +255,7 @@ public abstract class WorldObject {
 	 */
 	public void checkFindMyself() {
 		if (!findSameCell().contains(this)) {
+			//findsamecell = Find all the items at the same position as me!
 			throw new AssertionError("Couldn't find myself! Check World.register still works!");
 		}
 	}
@@ -257,15 +267,15 @@ public abstract class WorldObject {
 	 */
 	public List<WorldObject> findSameCell() {
 		return world.find(this.x, this.y);
-	}
+	} 
 
 	/**
 	 * Check whether this object is in the same spot as another.
 	 * 
-	 * @param other the other WorldObject.
-	 * @return true if their x and y coordinates are the same.
+	 * @param other the other WorldObject. //why? to show it's separate?
+	 * @return true if their x and y coordinates are the same. 
 	 */
-	public boolean inSameSpot(WorldObject other) {
+	public boolean inSameSpot(WorldObject other) { 
 		return this.x == other.getX() && this.y == other.getY();
 	}
 	

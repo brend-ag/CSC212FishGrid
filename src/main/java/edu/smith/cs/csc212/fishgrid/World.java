@@ -24,16 +24,19 @@ public class World {
 	 */
 	private List<WorldObject> items;
 	/**
-	 * A reference to a random object, so we can randomize placement of objects in this world.
+	 * A reference to a random object, so we can randomize 
+	 * placement of objects in this world.
 	 */
-	private Random rand = ThreadLocalRandom.current();
+	private Random rand = ThreadLocalRandom.current(); 
+	//this is why don't have to do rand in children files 
 
 	/**
 	 * Create a new world of a given width and height.
 	 * @param w - width of the world.
 	 * @param h - height of the world.
 	 */
-	public World(int w, int h) {
+	public World(int w, int h) { 
+		//constructor for world obj later in fishgame!
 		items = new ArrayList<>();
 		width = w;
 		height = h;
@@ -69,7 +72,9 @@ public class World {
 		// Don't let anybody add to this list!
 		// Make them use "register" and "remove".
 
-		// This is kind of an advanced-Java trick to return a list where add/remove crash instead of working.
+		/* This is kind of an advanced-Java trick to 
+		return a list where add/remove crash instead of working.
+		 */
 		return Collections.unmodifiableList(items);
 	}
 
@@ -78,7 +83,7 @@ public class World {
 	 * @param item - the Fish, Rock, Snail, or other WorldObject.
 	 */
 	public void register(WorldObject item) {
-		// Print out what we've added, for our sanity.
+		// Print out what we've added, for our sanity. (haha)
 		System.out.println("register: "+item);
 		items.add(item);
 	}
@@ -113,7 +118,7 @@ public class World {
 	 * @return a point (x,y) that has nothing else in the grid.
 	 */
 	public IntPoint pickUnusedSpace() {
-		// Build a set of all available spaces:
+		// Build a SET of all available spaces:
 		Set<IntPoint> available = new HashSet<>();
 		for (int x=0; x<getWidth(); x++) {
 			for (int y=0; y<getHeight(); y++) {
@@ -125,13 +130,14 @@ public class World {
 			available.remove(item.getPosition());
 		}
 
-		// If we get here, we have too much stuff.
+		// If we get here, we have too much stuff on our screen
 		// Let's crash our Java program!
 		if (available.size() == 0) {
 			throw new IllegalStateException("The world is too small! Trying to pick an unused space but there's nothing left.");
 		}
 
-		// Return an unused space at random: Need to copy to a list since sets do not have orders.
+		// Return an unused space at random: Need to COPY TO A LIST 
+		//since sets do not have orders.
 		List<IntPoint> unused = new ArrayList<>(available);
 		int which = rand.nextInt(unused.size());
 		return unused.get(which);
@@ -151,10 +157,15 @@ public class World {
 	 * Insert a new Rock into the world at random.
 	 * @return the Rock.
 	 */
-	public Rock insertRockRandomly() {
-		Rock r = new Rock(this);
+	public Rock insertRockRandomly(int color) { //had int color
+		Rock r = new Rock(color, this);
 		insertRandomly(r);
 		return r;
+	}
+	public Hearts insertHeartsRandomly(int color) {
+		Hearts h = new Hearts(color, this);
+		insertRandomly(h);
+		return h;
 	}
 	
 	/**
@@ -195,22 +206,36 @@ public class World {
 	public boolean canSwim(WorldObject whoIsAsking, int x, int y) {
 		if (x < 0 || x >= width || y < 0 || y >= height) {
 			return false;
-		}
+		} 
 		
 		// This will be important.
-		boolean isPlayer = whoIsAsking.isPlayer();
+		boolean isPlayer = whoIsAsking.isPlayer(); 
+			//isPlayer = who's asking if it's the player
 		
 		// We will need to look at who all is in the spot to determine if we can move there.
 		List<WorldObject> inSpot = this.find(x, y);
 		
 		for (WorldObject it : inSpot) {
-			// TODO(FishGrid): Don't let us move over rocks as a Fish.
-			// The other fish shouldn't step "on" the player, the player should step on the other fish.
+			//it = what's stepping on/being on top of smth else 
 			if (it instanceof Snail) {
-				// This if-statement doesn't let anyone step on the Snail.
-				// The Snail(s) are not gonna take it.
+				// doesn't allow for anything to step on snail 
 				return false;
 			}
+			//object cannot go over rock
+			if (it instanceof Rock) {
+				return false;
+			}
+			/* The other fish shouldn't step "on" the player, 
+			 * the player should step on the other fish.
+			 */
+			if(it instanceof Fish && !isPlayer) {
+				return false; 
+			}
+			if(isPlayer) {
+				if(it instanceof Fish) { 
+					return true;
+				}
+			} 
 		}
 		
 		// If we didn't see an obstacle, we can move there!
@@ -233,17 +258,34 @@ public class World {
 	 * @param followers a set of objects to follow the leader.
 	 */
 	public static void objectsFollow(WorldObject target, List<? extends WorldObject> followers) {
-		// TODO(FishGrid) Comment this method!
-		// Q1. What is recentPositions?
-		// Q2. What is followers?
+		//Comment this method!
+		// Q1. What is recentPositions? 
+		   //deque recent positions, collects intpts of fishies
+		// Q2. What is followers? 
+		  //List of fishes that follow, according to the creation
+		  //of the list above that comes
+		//as a parameter,which is vague about which class extends 
+		//WorldObjects with ?, allowing for any world objects to use it!
 		// Q3. What is target?
+		    //A WorldObject item, the leader of the pack (aka player)
 		// Q4. Why is past = putWhere[i+1]? Why not putWhere[i]?
+		    //Past is the coordinate 
 		List<IntPoint> putWhere = new ArrayList<>(target.recentPositions);
 		for (int i=0; i < followers.size() && i+1 < putWhere.size(); i++) {
 			// Q5. What is the deal with the two conditions in this for-loop?
 			// Conditions are in the "while" part of this loop.
+			   /*The followers.size() describes the size of the followers list
+			    * which holds the amount of follower fishes + 1 since 
+			    * it is exclusive
+			    * The putWhere.size = the size of the recent positions /intpoints
+			    * of the other fishes
+			    * Thus, i increases until it reaches the total amount of fishes
+			    * and the amount of points locating the fishes
+			    */
 			
 			IntPoint past = putWhere.get(i+1);
+//			System.out.println(past);
+//			System.out.println(putWhere);
 			followers.get(i).setPosition(past.x, past.y);
 		}
 	}

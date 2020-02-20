@@ -15,13 +15,18 @@ public class Fish extends WorldObject {
 	/**
 	 * A fish is only special because of its color now!
 	 */
-	static Color[] COLORS = {
-			Color.red,
+	static Color[] COLORS = { //notice it's a static array! + adding to it
+			Color.red, 
 			Color.green,
-			Color.yellow
-			// TODO: (lab) Add more colors.
+			Color.yellow,
+			Color.cyan, //20
+			Color.white,
+			Color.magenta,//20
+			Color.orange,//20
+			
 			// TODO: (FishGrid) Maybe make a special fish that is more points?
-	};
+	}; //scoring: works by moving the fish over other fish and then they are removed
+	//as you move, steps are counted +=1 but idt it does anything
 	/**
 	 * This is an index into the {@link #COLORS} array.
 	 */
@@ -35,7 +40,7 @@ public class Fish extends WorldObject {
 	 * Called only on the Fish that is the player!
 	 */
 	public void markAsPlayer() {
-		this.player = true;
+		this.player = true; 
 	}
 
 
@@ -54,7 +59,7 @@ public class Fish extends WorldObject {
 	 * @return the Color object from our array.
 	 */
 	public Color getColor() {
-		return COLORS[this.color];
+		return COLORS[this.color]; //goes through the Colors array to get a color
 	}
 	
 	/**
@@ -72,21 +77,22 @@ public class Fish extends WorldObject {
 		if (dt > 100) {
 			dt = 0;
 		}
+		//making the fish geometrically
 		Shape circle = new Ellipse2D.Double(-0.6, -0.6, 1.2, 1.2);
 		Shape body = new Ellipse2D.Double(-.40, -.2, .8, .4);
 		Shape tail = new Ellipse2D.Double(+.2, -.3, .2, .6);
 		Shape eye = new Ellipse2D.Double(-.25, -.1, .1, .1);
 		
-		Color color = getColor();
-		Color tailColor = color.darker();
+		Color color = getColor(); //pick a random color
+		Color tailColor = color.darker(); //tail = darker color so more realistic 
 
 		
 		Graphics2D flipped = (Graphics2D) g.create();
-		if (dt < 50) {
+		if (dt < 50) { //flips at certain num of dt
 			flipped.scale(-1, 1);
 		}
 		
-		if (this.player) {
+		if (this.player) { //if the player, flip the color
 			flipped.setColor(new Color(1f,1f,1f,0.5f));
 			flipped.fill(circle);
 		}
@@ -102,7 +108,7 @@ public class Fish extends WorldObject {
 		flipped.setColor(tailColor);
 		flipped.fill(tail);
 		
-		flipped.dispose();
+		flipped.dispose(); 
 	}
 	
 	@Override

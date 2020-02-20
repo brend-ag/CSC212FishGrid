@@ -1,5 +1,6 @@
 package edu.smith.cs.csc212.fishgrid;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,7 +17,8 @@ public class FishGame {
 	 */
 	World world;
 	/**
-	 * The player (a Fish.COLORS[0]-colored fish) goes seeking their friends.
+	 * The player (a Fish.COLORS[0]-colored fish) goes seeking their friends. !!
+	 *point of the games!
 	 */
 	Fish player;
 	/**
@@ -24,56 +26,59 @@ public class FishGame {
 	 */
 	FishHome home;
 	/**
-	 * These are the missing fish!
+	 * the missing fish
 	 */
-	List<Fish> missing;
+	List<Fish> missing; //simple list creation!
 	
-	/**
-	 * These are fish we've found!
+	/** fish we've found
 	 */
-	List<Fish> found;
+	List<Fish> found; 
 	
 	/**
 	 * Number of steps!
 	 */
-	int stepsTaken;
-	
-	/**
-	 * Score!
-	 */
+	int stepsTaken; //+1 every time move or click screen
 	int score;
-	
+	int NUM_ROCKS;
+	int rockX;
+	int rockY;
 	/**
 	 * Create a FishGame of a particular size.
 	 * @param w how wide is the grid?
 	 * @param h how tall is the grid?
 	 */
 	public FishGame(int w, int h) {
-		world = new World(w, h);
-		
-		missing = new ArrayList<Fish>();
+		world = new World(w, h); //create new world! 
+		Random rand = ThreadLocalRandom.current(); 
+			//really tried to not rewrite this code but world. or this. didn't work :(
+		missing = new ArrayList<Fish>(); //making an array of the list w fish
 		found = new ArrayList<Fish>();
+		NUM_ROCKS = rand.nextInt(8);
 		
 		// Add a home!
-		home = world.insertFishHome();
+		home = world.insertFishHome(); //little house
 		
-		// TODO(lab) Generate some more rocks!
-		// TODO(lab) Make 5 into a constant, so it's easier to find & change.
-		for (int i=0; i<5; i++) {
-			world.insertRockRandomly();
+		// random rocks
+		for (int i=0; i<NUM_ROCKS; i++) {
+			Rock rk = world.insertRockRandomly(i);
+ 			rockX = rk.getX();
+			rockY = rk.getY();
 		}
 		
-		// TODO(lab) Make the snail!
-		
-		// Make the player out of the 0th fish color.
+		// random snails
+		for (int i=0; i<6; i++) {
+			Snail sl = world.insertSnailRandomly();
+		}
+		// Make the player out of the 0th fish color. !!
 		player = new Fish(0, world);
 		// Start the player at "home".
-		player.setPosition(home.getX(), home.getY());
-		player.markAsPlayer();
-		world.register(player);
+		player.setPosition(home.getX(), home.getY()); //set initial position to home
+		player.markAsPlayer(); //bool that this (fish) = player (true!)
+		world.register(player); //console
 		
-		// Generate fish of all the colors but the first into the "missing" List.
-		for (int ft = 1; ft < Fish.COLORS.length; ft++) {
+		// Generate fish of all the colors except the first (which is why start @ 1)
+		//into the "missing" List.
+		for (int ft = 1; ft < Fish.COLORS.length; ft++) { 
 			Fish friend = world.insertFishRandomly(ft);
 			missing.add(friend);
 		}		
@@ -81,7 +86,8 @@ public class FishGame {
 	
 	
 	/**
-	 * How we tell if the game is over: if missingFishLeft() == 0.
+	 * game is over if missingFishLeft() == 0. aka all been found
+	 * or in found list
 	 * @return the size of the missing list.
 	 */
 	public int missingFishLeft() {
@@ -104,35 +110,45 @@ public class FishGame {
 		// Keep track of how long the game has run.
 		this.stepsTaken += 1;
 				
-		// These are all the objects in the world in the same cell as the player.
+		//all the objects in the world in the same cell as the player.
 		List<WorldObject> overlap = this.player.findSameCell();
 		// The player is there, too, let's skip them.
 		overlap.remove(this.player);
 		
 		// If we find a fish, remove it from missing.
 		for (WorldObject wo : overlap) {
-			// It is missing if it's in our missing list.
-			if (missing.contains(wo)) {
-				if (!(wo instanceof Fish)) {
+		
+			// if in our missing list = missing
+			if (missing.contains(wo)) { 
+				if (!(wo instanceof Fish)) { 
+					//only things in missing list = fishies!
 					throw new AssertionError("wo must be a Fish since it was in missing!");
 				}
 				// Convince Java it's a Fish (we know it is!)
-				Fish justFound = (Fish) wo;
+				Fish justFound = (Fish) wo; 
+				//casting to make sure what was found = fish!
 				
-				// Remove from world.
-				justFound.remove();
-				// TODO(lab): add to found instead! (So we see objectsFollow work!)
+				// add to found instead! (So we see objectsFollow work!)
+				//fish now follow player after overlap w them	
+				found.add(justFound); 
 				
 				// Remove from missing list.
 				missing.remove(justFound);
+			  //justFound.remove(); removed from world
 				
-				// Increase score when you find a fish!
-				score += 10;
+				// If you find the cyan, magenta, or orange fish = 20 points vs just 10!
+				if (justFound.color==3 || justFound.color == 5 || 
+					justFound.color==6) {
+					score+=20;
+				}
+				else {
+					score += 10;
+				}
 			}
 		}
 		
 		// Make sure missing fish *do* something.
-		wanderMissingFish();
+		wanderMissingFish(); //didn't have world before cast
 		// When fish get added to "found" they will follow the player around.
 		World.objectsFollow(player, found);
 		// Step any world-objects that run themselves.
@@ -143,11 +159,19 @@ public class FishGame {
 	 * Call moveRandomly() on all of the missing fish to make them seem alive.
 	 */
 	private void wanderMissingFish() {
+		//super(world);
 		Random rand = ThreadLocalRandom.current();
+		//WorldObject wt;
 		for (Fish lost : missing) {
 			// 30% of the time, lost fish move randomly.
 			if (rand.nextDouble() < 0.3) {
-				// TODO(lab): What goes here?
+				// goes here?
+				//if random double is less than 0.3, or less than 30% of time, 
+				//then move randomly!
+			//	Fish lost = (Fish) wo; 
+			//	((WorldObject) missing).moveRandomly();
+				//Fish mg = (Fish) wt;
+				lost.moveRandomly();
 			}
 		}
 	}
@@ -161,8 +185,17 @@ public class FishGame {
 		// TODO(FishGrid) use this print to debug your World.canSwim changes!
 		System.out.println("Clicked on: "+x+","+y+ " world.canSwim(player,...)="+world.canSwim(player, x, y));
 		List<WorldObject> atPoint = world.find(x, y);
-		// TODO(FishGrid) allow the user to click and remove rocks.
-
+		
+		for (WorldObject wobj: atPoint) {
+			
+				if (wobj instanceof Rock) { //oo keyword instanceof
+			
+//			if ((x==rockX) && (y==rockY)){
+  				 // Rock rk = (Rock) wobj; 
+				  wobj.remove(); 
+				     //works w any world obj! don't need to do rock specifically
+			}
+		}
 	}
 	
 }
