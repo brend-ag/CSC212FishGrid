@@ -11,9 +11,22 @@ import java.awt.Graphics2D;
  *
  */
 public class Heart extends WorldObject {
-
-	public Heart(World world) {
+	int color;
+	public Heart(int color, World world) {
 		super(world);
+		this.color = color;
+	}
+	private static Color[] HT_COLORS = new Color[] {
+			new Color(255, 128, 191),
+			new Color(255, 179, 217),
+			new Color(255, 153, 255),
+			new Color(255, 77, 148),
+			new Color(255, 136, 77),
+			new Color(210, 77, 255)
+			
+	};
+	public Color getHTColor() {
+		return HT_COLORS[this.color];
 	}
 
 	@Override
@@ -22,10 +35,10 @@ public class Heart extends WorldObject {
 		Graphics2D scale = (Graphics2D) g.create();
 		scale.scale(1.0 / (double) size, 1.0 / (double) size);
 		scale.translate(-size / 2, -size / 2);
-		scale.setColor(Color.red);
+		scale.setColor(getHTColor());
 		drawHeart(scale, 10, 10, 16, 16);
 	}
-
+	
 	@Override
 	public void step() {
 

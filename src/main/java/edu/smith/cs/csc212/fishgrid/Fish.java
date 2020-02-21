@@ -19,12 +19,12 @@ public class Fish extends WorldObject {
 			Color.red, 
 			Color.green,
 			Color.yellow,
-			Color.cyan, //20
+			Color.cyan, //20 points
 			Color.white,
-			Color.magenta,//20
-			Color.orange,//20
+			Color.magenta,//20 pts
+			Color.orange,//20 pts
 			
-			// TODO: (FishGrid) Maybe make a special fish that is more points?
+			//
 	}; //scoring: works by moving the fish over other fish and then they are removed
 	//as you move, steps are counted +=1 but idt it does anything
 	/**

@@ -1,3 +1,4 @@
+//Self-assigned lab partner: Aneliz Vargas!
 package edu.smith.cs.csc212.fishgrid;
 
 import java.awt.Color;
@@ -17,11 +18,11 @@ import me.jjfoley.gfx.TextBox;
  */
 public class Main extends GFX {
 	/**
-	 * Game size (visual). TODO(lab) Try changing this to 600.
+	 * Game size (visual). 
 	 */
 	public static int VISUAL_GRID_SIZE = 500; //400 by 400
 	/**
-	 * Game size (logical). TODO(lab) Try changing this to 15 or so.
+	 * Game size (logical). 
 	 */
 	public static int LOGICAL_GRID_SIZE = 12; 
 	/*the lines/grid, 10 squares across and down; 

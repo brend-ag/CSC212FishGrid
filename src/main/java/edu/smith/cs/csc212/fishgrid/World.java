@@ -151,6 +151,7 @@ public class World {
 		item.setPosition(pickUnusedSpace());
 		this.register(item);
 		item.checkFindMyself();
+		
 	}
 	
 	/**
@@ -162,10 +163,11 @@ public class World {
 		insertRandomly(r);
 		return r;
 	}
-	public Hearts insertHeartsRandomly(int color) {
-		Hearts h = new Hearts(color, this);
+	public Heart insertHeartRandomly(int color) {
+		Heart h = new Heart(color, this);
 		insertRandomly(h);
 		return h;
+		
 	}
 	
 	/**
@@ -204,7 +206,7 @@ public class World {
 	 * @return true if they can move there.
 	 */
 	public boolean canSwim(WorldObject whoIsAsking, int x, int y) {
-		if (x < 0 || x >= width || y < 0 || y >= height) {
+		if (x < 0 || x >= width || y < 0 || y >= height){
 			return false;
 		} 
 		
@@ -229,8 +231,16 @@ public class World {
 			 * the player should step on the other fish.
 			 */
 			if(it instanceof Fish && !isPlayer) {
-				return false; 
+				return false;
 			}
+			if(it instanceof Heart) {
+					return true;
+					
+					//heart.remove();
+				//	FishGame.heartCollected.remove();
+				//}
+			}
+			
 			if(isPlayer) {
 				if(it instanceof Fish) { 
 					return true;
